@@ -1,8 +1,10 @@
-/*
+.markdown-rendered .timestamp-bullet {
+    float: left;
+    margin-inline-start: -3.5em;
+}
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
-
-If your plugin does not need CSS, delete this file.
-
-*/
+.timestamp-bullet {
+    color: var(--text-faint);
+    position: relative;
+    display: inline-block;
+}
