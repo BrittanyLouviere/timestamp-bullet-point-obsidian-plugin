@@ -1,10 +1,11 @@
-.markdown-rendered .timestamp-bullet {
+.timestamp-bullet {
     float: left;
     margin-inline-start: -3.5em;
-}
-
-.timestamp-bullet {
     color: var(--text-faint);
     position: relative;
     display: inline-block;
+}
+
+span.timestamp-bullet + img + span {
+    margin-left: 0.5em;
 }

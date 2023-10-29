@@ -1,4 +1,6 @@
 import { Plugin } from 'obsidian';
+import { previewPlugin } from "previewPlugin";
+
 const bulletEl = "<div class=\"list-bullet\"></div>";
 
 export default class TimestampPlugin extends Plugin {
@@ -17,7 +19,9 @@ export default class TimestampPlugin extends Plugin {
 				}
 			}
 		});
+
+		this.registerEditorExtension([previewPlugin]);
 	}
 
 	onunload() { }
-}
+} 
