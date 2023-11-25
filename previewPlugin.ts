@@ -1,22 +1,21 @@
-import { syntaxTree } from "@codemirror/language";
-import { RangeSetBuilder } from "@codemirror/state";
 import {
   Decoration,
   DecorationSet,
   EditorView,
-  PluginSpec,
-  PluginValue,
   ViewPlugin,
   ViewUpdate,
   WidgetType,
+  MatchDecorator,
 } from "@codemirror/view";
 
 class TimestampBulletWidget extends WidgetType {
   private text: string;
 
-  constructor(text:string) {
+  constructor(text: string) {
     super();
-    this.text = text;
+    const start = text.indexOf('[') + 1;
+    const end = text.indexOf(']')
+    this.text = text.substring(start, end);
   }
 
   toDOM(view: EditorView): HTMLElement {
@@ -29,71 +28,24 @@ class TimestampBulletWidget extends WidgetType {
   }
 }
 
-class PreviewPlugin implements PluginValue {
-  decorations: DecorationSet;
+const matcher = new MatchDecorator({
+  regexp: /^- \[\d{1,2}:\d{2}\]/gm,
+  decoration: match => Decoration.replace({
+    widget: new TimestampBulletWidget(match[0]),
+  })
+})
 
+export const previewPlugin = ViewPlugin.fromClass(class {
+  placeholders: DecorationSet
   constructor(view: EditorView) {
-    this.decorations = this.buildDecorations(view);
+    this.placeholders = matcher.createDeco(view)
   }
-
   update(update: ViewUpdate) {
-    if (update.docChanged || update.viewportChanged) {
-      this.decorations = this.buildDecorations(update.view);
-    }
+    this.placeholders = matcher.updateDeco(update, this.placeholders)
   }
-
-  destroy() {}
-
-  buildDecorations(view: EditorView): DecorationSet {
-    const builder = new RangeSetBuilder<Decoration>();
-
-    for (const { from, to } of view.visibleRanges) {
-      syntaxTree(view.state).iterate({
-        from,
-        to,
-        enter(node) {
-          if (node.type.name.contains("formatting-list")) {
-            const listCharFrom = node.from;
-            let listCharTo = listCharFrom;
-            let timeStamp = "";
-            
-            if (node.nextSibling()
-              && node.name.contains("hmd-barelink")
-              && node.nextSibling() 
-              && node.name.contains("hmd-barelink")
-            ){
-              timeStamp = view.state.sliceDoc(node.from, node.to);
-              if (node.nextSibling() 
-                && node.name.contains("hmd-barelink")){
-                  listCharTo = node.to;
-                }
-            }
-
-            if (listCharFrom != listCharTo
-              && timeStamp.search(/\d{1,2}:\d{2}/) == 0
-              && timeStamp.length < 6) {
-              builder.add(
-                listCharFrom,
-                listCharTo,
-                Decoration.replace({
-                  widget: new TimestampBulletWidget(timeStamp),
-                })
-              );              
-            }
-          }
-        },
-      });
-    }
-
-    return builder.finish();
-  }
-} 
-
-const pluginSpec: PluginSpec<PreviewPlugin> = {
-  decorations: (value: PreviewPlugin) => value.decorations,
-};
-
-export const previewPlugin = ViewPlugin.fromClass(
-  PreviewPlugin,
-  pluginSpec
-);
+}, {
+  decorations: instance => instance.placeholders,
+  provide: plugin => EditorView.atomicRanges.of(view => {
+    return view.plugin(plugin)?.placeholders || Decoration.none
+  })
+})
