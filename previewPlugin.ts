@@ -29,7 +29,7 @@ class TimestampBulletWidget extends WidgetType {
 }
 
 const matcher = new MatchDecorator({
-  regexp: /^- \[\d{1,2}:\d{2}\]/gm,
+  regexp: /^- \[\d{1,2}:\d{2}\] /gm,
   decoration: match => Decoration.replace({
     widget: new TimestampBulletWidget(match[0]),
   })
