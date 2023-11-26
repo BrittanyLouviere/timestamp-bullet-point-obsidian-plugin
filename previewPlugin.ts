@@ -41,7 +41,12 @@ export const previewPlugin = ViewPlugin.fromClass(class {
     this.placeholders = matcher.createDeco(view)
   }
   update(update: ViewUpdate) {
-    this.placeholders = matcher.updateDeco(update, this.placeholders)
+    const isSource = app.workspace.activeLeaf ? app.workspace.activeLeaf.getViewState().state.source : false
+
+    this.placeholders = matcher.createDeco(update.view)
+    this.placeholders = this.placeholders.update({
+      filter: x => !isSource
+    });
   }
 }, {
   decorations: instance => instance.placeholders,
