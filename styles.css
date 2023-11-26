@@ -6,6 +6,6 @@
     display: inline-block;
 }
 
-span.timestamp-bullet + img + span {
+span.timestamp-bullet+img+span {
     margin-left: 0.5em;
 }
