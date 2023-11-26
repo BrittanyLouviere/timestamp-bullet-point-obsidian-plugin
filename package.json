@@ -1,6 +1,6 @@
 {
 	"name": "timestamp-bullet-point-plugin",
-	"version": "0.6.0",
+	"version": "1.0.0",
 	"description": "This plugin renders timestamps like a bullet point.",
 	"main": "main.js",
 	"scripts": {
