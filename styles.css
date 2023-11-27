@@ -1,9 +1,16 @@
 .timestamp-bullet {
-    float: left;
-    margin-inline-start: -3.5em;
+    width: 3em;
     color: var(--text-faint);
     position: relative;
     display: inline-block;
+}
+
+div[data-mode=preview] .timestamp-bullet {
+    margin-inline-start: -2em;
+}
+
+div[data-mode=source] .timestamp-bullet {
+    margin-inline-start: -1em;
 }
 
 span.timestamp-bullet+img+span {
